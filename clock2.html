@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>時間</title>
+</head>
+<style>
+
+
+body{
+    background-image: url("./cloud.jpg") ;
+    /* filter:blur(5px); */
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment:fixed;
+    }
+  
+
+.words {
+    font-family:'Times New Roman', Times, serif, "微軟正黑體";
+    font-size: 1.35em;
+    color: rgba(255, 255, 255, .5);
+    margin-top: 10px;
+}
+
+
+#clock {
+    width: 350px;
+    height: 350px;
+    top: 50px;
+    left: 50px;
+    position: center;
+    border-style: dotted;
+    border-color:pink;
+    border-radius: 50%;
+    background-image: url("./cloud.jpg");
+    background-size: cover;
+    /* background-color: rgba(255, 255, 0, .1); */
+    position: relative;
+    /* backdrop-filter: blur(3px);  */
+    /* 把背景變模糊 */ */
+}
+
+#second {
+    position: absolute;
+    width: 50%;
+    height: 3px;
+    /* background-color: rgba(255, 255, 255, .3); */
+    top: calc(50% - 3px);     /* 將指針放在精準的位置，因為指針高度為6px，從頂端到圓的一半為50%的位置，上方分到3px，下方分到3px */
+    transform: rotate(90deg);
+    transform-origin: right center; 
+    /* origin: 100%為以底部做旋轉中心，可改為 right center (水平在右邊，垂直中心在中間)
+    旋轉中心預設為cener */
+    border-radius: 3px;
+    z-index: 10;
+}
+
+#second:after {
+    content: "";
+    width: 20px;
+    height: 20px;
+    background-color: white;
+    display: block;
+    border-radius: 50%;
+    position: absolute;
+    top: calc(50% - 10px);
+    left: -11px;
+    backdrop-filter: blur(10px); 
+}
+
+#second:before {
+    content: "";
+    width: 40px;
+    height: 40px;
+    background-color:white;
+    display: block;
+    border-radius: 50%;
+    position: absolute;
+    top: calc(50% - 20px);
+    left: -20px;
+    filter:blur(10px);
+}
+
+#minute {
+    position: absolute;
+    width: 45%; 
+    /* 先關掉tranform，可得分針為水平，但不在時鐘中心，要左邊空5%，因分針寬度為45% */
+    left: 5%;
+    height: 6px;
+    background-color: rgba(255, 255, 255, .5);
+    top: calc(50% - 3px);     
+     transform: rotate(90deg); 
+    transform-origin: right center; 
+    border-radius: 3px;
+    z-index: 20;
+}
+
+
+#hour {
+    position: absolute;
+    width: 25%; 
+    left: 25%;
+    height: 6px;
+    background-color: rgba(255, 255, 255, .5);
+    top: calc(50% - 3px);     
+    transform: rotate(90deg); 
+    transform-origin: right center; 
+    border-radius: 3px;
+    z-index: 30;
+}
+
+.container {
+    display: flex;
+    height: 500px;
+    justify-content: center;
+
+}
+
+.timeCalligraphy {
+    width: 200px;
+    float: right;
+    animation-name: calligraphy;
+    animation-duration: 60s;  
+    animation-iteration-count: 1;
+    animation-timing-function: linear;
+}
+
+@keyframes calligraphy{
+    0% {opacity: 1;   }
+    50% {transform: scale(0.1);   }
+    /* 50% { opacity: 1;  transform: rotate(1440deg) scale(0.1); } */
+    90% { opacity: 0;   }
+    100% { opacity: 0;  }
+}
+
+.clockwise{
+    flex: 0 0 350px;  
+    /* 三個參數(不變長 不變小 尺寸固定為350px) */
+}
+
+</style>
+
+<body>
+    
+<p class="words">現在時間：<span id="time"></span></p>
+
+<div class="container"> 
+
+    <div>
+        <img src="time.png" alt="" class="timeCalligraphy">
+    </div><div id="clock" class="clockwise">
+        <div id="hour"></div>
+        <div id="minute"></div>
+        <div id="second"></div>        
+    </div>
+
+</div>    
+
+
+<script>
+
+let hr= document.getElementById("hour");
+let min= document.getElementById("minute");
+let sec= document.getElementById("second");
+
+// 0229
+let merT= document.getElementById("time");
+
+
+// 0220
+let clock = () => {
+
+setInterval(()=>{
+    let date= new Date();
+    // Date()為jS的函數 getDay, getYear, check google.
+    let hh= date.getHours();
+    let mm= date.getMinutes();
+    let ss= date.getSeconds();
+//    console.log(hh+":"+mm+":"+ss);
+// console panel中就會出現 如 14:12:55的時鐘模式
+    hr.style.transform= `rotate( ${hh*30+90}deg)`;
+    min.style.transform= `rotate( ${mm*6+90}deg)`;
+    sec.style.transform= `rotate( ${ss*6+90}deg)`;
+    // $和{}中間不能有空格
+    //一個圓為360度 除以 12小時，一小時走30度，
+    // 原先html畫出的指針為水平(未rotate之前)，所以要在加90度
+    let yr= date.getFullYear();
+    let mon= date.getMonth()+1;
+    // JS抓到的月份會少1，所以要加1
+    let dt= date.getDate();
+    merT.innerText = yr+"年"+mon+"月"+dt+"日"+hh+":"+mm+":"+ss+"";
+            //或 time.innerText  = date.toLocaleString("zh-tw");
+}, 1000);
+
+}
+clock();
+setInterval(clock, 1000);
+// 0220 setInterval 1000，為1秒之後才會執行，所以改寫為function
+// 再用setInterval(clock, 1000)參數呼叫
+
+
+</script>
+
+
+
+
+
+
+
+</body>
+</html>
